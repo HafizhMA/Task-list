@@ -2,15 +2,24 @@ import React, { useState } from "react";
 
 const Task = () => {
   const [tasks, setTasks] = useState([]);
-  const [taskText, setTaskText] = useState(""); // State for input text
+  const [taskText, setTaskText] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Add the new task to the tasks array
+    if (taskText.trim() === "") {
+      setError("Inputan tidak boleh kosong");
+      return;
+    }
+
+    // Menghapus pesan kesalahan sebelumnya
+    setError("");
+
+    // Menambahkan tugas baru ke dalam array tugas
     setTasks([...tasks, taskText]);
 
-    // Clear the input field
+    // Mengosongkan input field
     setTaskText("");
   };
 
@@ -20,15 +29,13 @@ const Task = () => {
     setTasks(updatedTasks);
   };
 
-  console.log(tasks);
-
   return (
     <>
       <section>
         <div className="container">
           <form onSubmit={handleSubmit}>
             <div>
-              <label>Task:</label>
+              <label>Tugas:</label>
               <input
                 type="text"
                 name="tasks"
@@ -38,10 +45,11 @@ const Task = () => {
             </div>
             <button type="submit">Kirim</button>
           </form>
+          <h2>{error}</h2>
           {tasks.map((task, index) => (
             <div key={index}>
               <h3>{task}</h3>
-              <button onClick={() => deleteTask(index)}>Delete</button>
+              <button onClick={() => deleteTask(index)}>Hapus</button>
             </div>
           ))}
         </div>
