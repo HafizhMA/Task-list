@@ -1,7 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Task = () => {
-  return <div>Task</div>;
+  const [tasks, setTasks] = useState([]);
+  const [taskText, setTaskText] = useState(""); // State for input text
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Add the new task to the tasks array
+    setTasks([...tasks, taskText]);
+
+    // Clear the input field
+    setTaskText("");
+  };
+
+  console.log(tasks);
+
+  return (
+    <>
+      <section>
+        <div className="container">
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label>Task:</label>
+              <input
+                type="text"
+                name="tasks"
+                value={taskText}
+                onChange={(e) => setTaskText(e.target.value)}
+              />
+            </div>
+            <button type="submit">Kirim</button>
+          </form>
+          {tasks.map((task, index) => (
+            <div key={index}>
+              <h3>{task}</h3>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
+  );
 };
 
 export default Task;
