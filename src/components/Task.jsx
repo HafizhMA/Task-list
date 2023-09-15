@@ -14,6 +14,12 @@ const Task = () => {
     setTaskText("");
   };
 
+  const deleteTask = (index) => {
+    const updatedTasks = [...tasks];
+    updatedTasks.splice(index, 1);
+    setTasks(updatedTasks);
+  };
+
   console.log(tasks);
 
   return (
@@ -35,6 +41,7 @@ const Task = () => {
           {tasks.map((task, index) => (
             <div key={index}>
               <h3>{task}</h3>
+              <button onClick={() => deleteTask(index)}>Delete</button>
             </div>
           ))}
         </div>
