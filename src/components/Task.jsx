@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Form from "react-bootstrap/Form";
 
 function Task() {
   const [notes, setNotes] = useState([]);
@@ -7,6 +8,7 @@ function Task() {
   const [updateValue, setUpdateValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [updateError, setUpdateError] = useState("");
+  const [checkedNotes, setCheckedNotes] = useState([]);
 
   const addNote = () => {
     const trimmedNoteValue = noteValue.trim();
@@ -14,6 +16,7 @@ function Task() {
       setNotes([...notes, trimmedNoteValue]);
       setNoteValue("");
       setEmptyInput("");
+      setCheckedNotes([...checkedNotes, false]); // Initialize checkbox state for the new note
     } else {
       setEmptyInput("inputan tidak boleh kosong");
     }
@@ -43,7 +46,16 @@ function Task() {
       setUpdateValue("");
       setSelectedIndex(-1);
       setUpdateError("");
+      const updatedCheckedNotes = [...checkedNotes];
+      updatedCheckedNotes.splice(index, 1);
+      setCheckedNotes(updatedCheckedNotes);
     }
+  };
+
+  const handleCheckboxChange = (index) => {
+    const updatedCheckedNotes = [...checkedNotes];
+    updatedCheckedNotes[index] = !checkedNotes[index];
+    setCheckedNotes(updatedCheckedNotes);
   };
 
   return (
@@ -101,21 +113,40 @@ function Task() {
                   className="item my-3 rounded-3 bg-dark-subtle"
                   style={{ padding: "10px" }}
                 >
-                  <pre>{note}</pre>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedIndex(index)}
-                    className="btn btn-warning"
+                  <pre
+                    style={{
+                      textDecoration: checkedNotes[index]
+                        ? "line-through"
+                        : "none",
+                    }}
                   >
-                    Update
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => deleteNote(index)}
-                    className="btn btn-danger"
-                  >
-                    Delete
-                  </button>
+                    {note}
+                  </pre>
+                  <div className="d-flex align-items-center justify-content-end">
+                    <label className="d-flex">
+                      Done?
+                      <Form.Check
+                        className="mx-2"
+                        type="checkbox"
+                        checked={checkedNotes[index]}
+                        onChange={() => handleCheckboxChange(index)}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedIndex(index)}
+                      className="btn btn-warning mx-3"
+                    >
+                      Update
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteNote(index)}
+                      className="btn btn-danger"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ))
             )}
