@@ -6,26 +6,32 @@ function Task() {
   const [emptyInput, setEmptyInput] = useState("");
   const [updateValue, setUpdateValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [updateError, setUpdateError] = useState("");
 
   const addNote = () => {
     const trimmedNoteValue = noteValue.trim();
     if (trimmedNoteValue) {
       setNotes([...notes, trimmedNoteValue]);
       setNoteValue("");
-    } else if (noteValue === "") {
+      setEmptyInput("");
+    } else {
       setEmptyInput("inputan tidak boleh kosong");
-      return;
     }
-    setEmptyInput("");
   };
 
   const updateNote = () => {
     if (selectedIndex !== -1) {
-      const updatedNotes = [...notes];
-      updatedNotes[selectedIndex] = updateValue;
-      setNotes(updatedNotes);
-      setUpdateValue("");
-      setSelectedIndex(-1);
+      const trimmedUpdateValue = updateValue.trim();
+      if (trimmedUpdateValue) {
+        const updatedNotes = [...notes];
+        updatedNotes[selectedIndex] = trimmedUpdateValue;
+        setNotes(updatedNotes);
+        setUpdateValue("");
+        setSelectedIndex(-1);
+        setUpdateError("");
+      } else {
+        setUpdateError("Update input tidak boleh kosong");
+      }
     }
   };
 
@@ -36,6 +42,7 @@ function Task() {
       setNotes(updatedNotes);
       setUpdateValue("");
       setSelectedIndex(-1);
+      setUpdateError("");
     }
   };
 
@@ -62,8 +69,8 @@ function Task() {
             <button type="button" className="btn btn-primary" onClick={addNote}>
               Submit
             </button>
+            <p className="text-white mt-3">{emptyInput}</p>
           </form>
-
           <form style={{ display: selectedIndex !== -1 ? "block" : "none" }}>
             <div className="input-group my-3">
               <span className="input-group-text">Update Note</span>
@@ -81,10 +88,10 @@ function Task() {
             >
               Update
             </button>
+            <p className="text-danger mt-3">{updateError}</p>
           </form>
 
           <div className="my-3" id="output">
-            <p className="text-white">{emptyInput}</p>
             {notes.length === 0 ? (
               <p className="text-white">Notes masih kosong.</p>
             ) : (
