@@ -1,28 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 
 function Task() {
-  const [notes, setNotes] = useState([]);
-  const [noteValue, setNoteValue] = useState("");
-  const [emptyInput, setEmptyInput] = useState("");
-  const [updateValue, setUpdateValue] = useState("");
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [updateError, setUpdateError] = useState("");
-  const [checkedNotes, setCheckedNotes] = useState([]);
+  const [notes, setNotes] = useState([]); // State untuk menyimpan catatan.
+  const [noteValue, setNoteValue] = useState(""); // State untuk menyimpan nilai input catatan.
+  const [emptyInput, setEmptyInput] = useState(""); // State untuk pesan kesalahan input kosong.
+  const [updateValue, setUpdateValue] = useState(""); // State untuk menyimpan nilai input pembaruan catatan.
+  const [selectedIndex, setSelectedIndex] = useState(-1); // State untuk menyimpan indeks catatan yang sedang diperbarui.
+  const [updateError, setUpdateError] = useState(""); // State untuk pesan kesalahan pembaruan catatan.
+  const [checkedNotes, setCheckedNotes] = useState([]); // State untuk menyimpan status tanda centang catatan.
+
+  useEffect(() => {
+    // Menggunakan useEffect untuk mengambil data dari localStorage saat komponen dimuat.
+    const savedNotes = JSON.parse(localStorage.getItem("notes"));
+    const savedCheckedNotes = JSON.parse(localStorage.getItem("checkedNotes"));
+
+    if (savedNotes) {
+      setNotes(savedNotes);
+    }
+
+    if (savedCheckedNotes) {
+      setCheckedNotes(savedCheckedNotes);
+    }
+  }, []);
 
   const addNote = () => {
+    // Fungsi untuk menambahkan catatan baru.
     const trimmedNoteValue = noteValue.trim();
     if (trimmedNoteValue) {
       setNotes([...notes, trimmedNoteValue]);
       setNoteValue("");
       setEmptyInput("");
-      setCheckedNotes([...checkedNotes, false]); // Initialize checkbox state for the new note
+      setCheckedNotes([...checkedNotes, false]);
+      updateLocalStorage([...notes, trimmedNoteValue], checkedNotes);
     } else {
-      setEmptyInput("inputan tidak boleh kosong");
+      setEmptyInput("Inputan tidak boleh kosong");
     }
   };
 
   const updateNote = () => {
+    // Fungsi untuk memperbarui catatan yang ada.
     if (selectedIndex !== -1) {
       const trimmedUpdateValue = updateValue.trim();
       if (trimmedUpdateValue) {
@@ -32,6 +49,7 @@ function Task() {
         setUpdateValue("");
         setSelectedIndex(-1);
         setUpdateError("");
+        updateLocalStorage(updatedNotes, checkedNotes);
       } else {
         setUpdateError("Update input tidak boleh kosong");
       }
@@ -39,6 +57,7 @@ function Task() {
   };
 
   const deleteNote = (index) => {
+    // Fungsi untuk menghapus catatan.
     if (index !== -1) {
       const updatedNotes = [...notes];
       updatedNotes.splice(index, 1);
@@ -49,15 +68,25 @@ function Task() {
       const updatedCheckedNotes = [...checkedNotes];
       updatedCheckedNotes.splice(index, 1);
       setCheckedNotes(updatedCheckedNotes);
+      updateLocalStorage(updatedNotes, updatedCheckedNotes);
     }
   };
 
   const handleCheckboxChange = (index) => {
+    // Fungsi untuk mengubah status tanda centang catatan.
     const updatedCheckedNotes = [...checkedNotes];
     updatedCheckedNotes[index] = !checkedNotes[index];
     setCheckedNotes(updatedCheckedNotes);
+    updateLocalStorage(notes, updatedCheckedNotes);
   };
 
+  // Helper function untuk memperbarui localStorage.
+  const updateLocalStorage = (updatedNotes, updatedCheckedNotes) => {
+    localStorage.setItem("notes", JSON.stringify(updatedNotes));
+    localStorage.setItem("checkedNotes", JSON.stringify(updatedCheckedNotes));
+  };
+
+  // Render tampilan komponen.
   return (
     <div>
       <section style={{ padding: "100px 0" }}>
